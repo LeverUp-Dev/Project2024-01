@@ -6,22 +6,30 @@ using UnityEngine.Networking;
 
 class User
 {
-    public string username;
+    public string nickname;
     public string userId;
     public string password;
 }
 
 public class HTTPSever : MonoBehaviour
 {
-    User user = new User() { username = "미하루", userId = "ododo3", password = "esa101904" };
+    public MenuManager menuManager;
 
-    void Start()
+    /// <summary>
+    /// User의 회원가입 승인 요청을 서버에 보냅니다.
+    /// </summary>
+    /// <param name="nickname"></param>
+    /// <param name="userId"></param>
+    /// <param name="password"></param>
+    public void SendSignUpRequest(string nickname, string userId, string password)
     {
+        User user = new User() { nickname = nickname, userId = userId, password = password };
+
         string userJson = JsonUtility.ToJson(user);
 
-        print(userJson);
+        //print(userJson);
 
-        StartCoroutine(PostRequest("http://localhost:8080/api/v1/users", userJson));
+        StartCoroutine(PostRequest("http://localhost:8080/api/v2/users", userJson));
     }
 
     IEnumerator PostRequest(string url, string userData)
@@ -36,13 +44,14 @@ public class HTTPSever : MonoBehaviour
             // 요청 보내기
             yield return webRequest.SendWebRequest();
 
-            if (webRequest.isNetworkError || webRequest.isHttpError)
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
+                webRequest.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError(webRequest.error);
+                menuManager.SetNetworkMassageLog("이미 사용중인 이름이나 아이디입니다." + webRequest.error, Color.red);
             }
             else
             {
-                Debug.Log("회원가입 성공!");
+                menuManager.SetNetworkMassageLog("회원 등록이 완료되었습니다.", Color.green);
             }
         }
     }
