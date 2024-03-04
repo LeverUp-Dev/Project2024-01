@@ -14,9 +14,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button sendLoginBT;
 
     [SerializeField] private GameObject signupPanel;
-    [SerializeField] private InputField signupName;
     [SerializeField] private InputField signupId;
     [SerializeField] private InputField signupPassword;
+    [SerializeField] private InputField signupName;
+    [SerializeField] private InputField signupEmail;
     [SerializeField] private Button sendSignupBT;
 
     [Header("Main Menu")]
@@ -59,6 +60,7 @@ public class MenuManager : MonoBehaviour
 
     public void OnClickSignUpCancel()
     {
+        signupEmail.text = null;
         signupName.text = null;
         signupId.text = null;
         signupPassword.text = null;
@@ -68,7 +70,7 @@ public class MenuManager : MonoBehaviour
 
     public void OnClickSandSignUp()
     {
-        HTTPSever.SendSignUpRequest(signupName.text, signupId.text, signupPassword.text);
+        HTTPSever.SendSignUpRequest(signupId.text, signupPassword.text, signupName.text, signupEmail.text);
     }
 
     IEnumerator NetworkMassage()
@@ -137,7 +139,8 @@ public class MenuManager : MonoBehaviour
         {
             bool allEmpty = string.IsNullOrEmpty(signupName.text) ||
                         string.IsNullOrEmpty(signupId.text) ||
-                        string.IsNullOrEmpty(signupPassword.text);
+                        string.IsNullOrEmpty(signupPassword.text) ||
+                        string.IsNullOrEmpty(signupEmail.text);
 
             if (allEmpty || massageImage.activeSelf) //inputField가 하나라도 비어 있거나 메세지창이 있으면 false
             {

@@ -6,9 +6,10 @@ using UnityEngine.Networking;
 
 class User
 {
-    public string nickname;
-    public string userId;
+    public string username;
     public string password;
+    public string nickname;
+    public string email;
 }
 
 public class HTTPSever : MonoBehaviour
@@ -18,18 +19,19 @@ public class HTTPSever : MonoBehaviour
     /// <summary>
     /// User의 회원가입 승인 요청을 서버에 보냅니다.
     /// </summary>
-    /// <param name="nickname"></param>
-    /// <param name="userId"></param>
+    /// <param name="username"></param>
     /// <param name="password"></param>
-    public void SendSignUpRequest(string nickname, string userId, string password)
+    /// <param name="nickname"></param>
+    /// <param name="email"></param>
+    public void SendSignUpRequest(string username, string password, string nickname, string email)
     {
-        User user = new User() { nickname = nickname, userId = userId, password = password };
+        User user = new User() { username = username, password = password, nickname = nickname, email = email };
 
         string userJson = JsonUtility.ToJson(user);
 
-        //print(userJson);
+        print(userJson);
 
-        StartCoroutine(PostRequest("http://localhost:8080/api/v2/users", userJson));
+        StartCoroutine(PostRequest("http://localhost:8080/join", userJson));
     }
 
     IEnumerator PostRequest(string url, string userData)
