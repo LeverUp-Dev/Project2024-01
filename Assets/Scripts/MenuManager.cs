@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,7 +51,7 @@ public class MenuManager : MonoBehaviour
 
     public void OnClickSandLogin()
     {
-
+        HTTPSever.SendLoginRequest(loginId.text, loginPassword.text);
     }
 
     public void OnClickSignUp()
@@ -73,31 +74,42 @@ public class MenuManager : MonoBehaviour
         HTTPSever.SendSignUpRequest(signupId.text, signupPassword.text, signupName.text, signupEmail.text);
     }
 
-    IEnumerator NetworkMassage()
+    IEnumerator NetworkMassage(bool isLogin)
     {
         massageImage.SetActive(true);
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1.5f);
 
         massageImage.SetActive(false);
 
         OnClickLoginCancel();
         OnClickSignUpCancel();
 
-        StopCoroutine(NetworkMassage());
+        if (isLogin && networkMassage.color == Color.green)
+            LoadMainMenu();
+
+        StopCoroutine("NetworkMassage");
     }
 
     /// <summary>
     /// Network 통신을 통해 보내는 메세지와 메세지의 폰트 색을 변경할 수 있습니다.
+    /// 로그인 요청인지에 대한 bool값을 설정해 주어야 합니다.
     /// </summary>
     /// <param name="massageLog"></param>
     /// <param name="logColor"></param>
-    public void SetNetworkMassageLog(string massageLog, Color logColor)
+    /// <param name="isLogin"></param>
+    public void SetNetworkMassageLog(string massageLog, Color logColor, bool isLogin)
     {
         networkMassage.text = massageLog;
         networkMassage.color = logColor;
 
-        StartCoroutine(NetworkMassage());
+        StartCoroutine(NetworkMassage(isLogin));
+    }
+
+    public void LoadMainMenu()
+    {
+        startMenu.SetActive(false);
+        mainMenu.SetActive(true);
     }
 
     void Update()
