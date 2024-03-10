@@ -11,14 +11,16 @@ public class PlayerController : MonoBehaviour
     [Header("Player reference")]
     public TilePathManager tilePathManager;
     public PlayerPhysics physics;
+    public Dice dice;
 
-    public int diceNum;
     public int currentTile;
 
     public float rotationSpeed;
 
     Vector3 targetPos;
     bool isMove = false;
+    //주사위
+    public bool isReady = false;
 
     void Start()
     {
@@ -72,7 +74,18 @@ public class PlayerController : MonoBehaviour
         //스페이스 키를 눌러 다이스 돌림
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StartCoroutine("StepTileMove");
+            isReady = false;
+            dice.gameObject.SetActive(false);
+
+            //추후 애니메이션 삽입 부분
+
+            StartCoroutine("StepTileMove", dice.diceNum);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            isReady = !isReady;
+            dice.gameObject.SetActive(isReady);
         }
     }
 
@@ -87,17 +100,20 @@ public class PlayerController : MonoBehaviour
     }
 
     // 한 걸음 씩 움직이게하는 코루틴 함수
-    IEnumerator StepTileMove()
+    IEnumerator StepTileMove(int steps)
     {
-        for(int i = 0; i < diceNum; i++)
+        for(int i = 0; i < steps; i++)
         {
-            WalkToTargetTile(currentTile + 1);
+            WalkToTargetTile((currentTile + 1)%40);
 
             yield return new WaitUntil(() => !isMove);
 
             yield return new WaitForSeconds(0.5f);
 
-            currentTile++;
+            if (currentTile == 39)
+                currentTile = 0;
+            else
+                currentTile++;
         }
     }
 }

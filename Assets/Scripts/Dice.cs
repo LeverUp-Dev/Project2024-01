@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class Dice : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public PlayerController playerCtrl;
 
-    // Update is called once per frame
+    public int diceNum;
+
     void Update()
     {
-        
+        //오브젝트 활성화 시 주사위 돌리기
+        if (gameObject.activeSelf)
+            RollDice();
+    }
+
+    public void RollDice()
+    {
+        diceNum = Random.Range(1, 15);
     }
 }
