@@ -90,11 +90,11 @@ public class PlayerController : MonoBehaviour
     }
 
     //타겟 타일을 지정하고 움직임 시작
-    public void WalkToTargetTile(int targetTile)
+    void WalkToTargetTile(int targetTile)
     {
-        targetPos = new Vector3(tilePathManager.managerTiles[targetTile].mainTiles.position.x,
+        targetPos = new Vector3(tilePathManager.mainTiles[targetTile].mainTile.position.x,
            transform.position.y,
-           tilePathManager.managerTiles[targetTile].mainTiles.position.z);
+           tilePathManager.mainTiles[targetTile].mainTile.position.z);
 
         isMove = true;
     }
@@ -115,5 +115,7 @@ public class PlayerController : MonoBehaviour
             else
                 currentTile++;
         }
+
+        StopAllCoroutines();
     }
 }

@@ -5,27 +5,73 @@ using UnityEngine;
 
 public class TilePathManager : MonoBehaviour
 {
+    public Transform[] mainTileGroup;
+    public Transform[] hTileGroup;
+    public Transform[] vTileGroup;
 
-    public GameObject mainTileGroup;
+    public class TileStatus
+    {
+        public bool isChoiceTile;
+    }
 
     [System.Serializable]
-    public class DataTilePath {
+    public class DataMainTilePath : TileStatus
+    {
+        public Transform mainTile;
 
-        public Transform mainTiles;
-
-        public DataTilePath(Transform mainTiles)
+        public DataMainTilePath(Transform mainTiles)
         {
-            this.mainTiles = mainTiles;
+            this.mainTile = mainTiles;
         }
     }
 
-    public List<DataTilePath> managerTiles = new List<DataTilePath>();
-
-    void Awake()
+    [System.Serializable]
+    public class DataHTilePath : TileStatus
     {
-        for (int i = 0; i < mainTileGroup.transform.childCount; i++)
+        public Transform hTile;
+
+        public DataHTilePath(Transform hTiles)
         {
-            managerTiles.Add(new DataTilePath(mainTileGroup.GetComponentsInChildren<Transform>()[i + 1]));
+            this.hTile = hTiles;
         }
+    }
+
+    [System.Serializable]
+    public class DataVTilePath : TileStatus
+    {
+        public Transform vTile;
+
+        public DataVTilePath(Transform vTiles)
+        {
+            this.vTile = vTiles;
+        }
+    }
+
+    public List<DataMainTilePath> mainTiles = new List<DataMainTilePath>();
+    public List<DataHTilePath> hTiles = new List<DataHTilePath>();
+    public List<DataVTilePath> vTiles = new List<DataVTilePath>();
+
+    private void Awake()
+    {
+        foreach (Transform t in mainTileGroup)
+        {
+            mainTiles.Add(new DataMainTilePath(t));
+        }
+        mainTiles[5].isChoiceTile = true;
+        mainTiles[15].isChoiceTile = true;
+        mainTiles[25].isChoiceTile = true;
+        mainTiles[35].isChoiceTile = true;
+
+        foreach (Transform t in hTileGroup)
+        {
+            hTiles.Add(new DataHTilePath(t));
+        }
+        hTiles[5].isChoiceTile = true;
+
+        foreach (Transform t in vTileGroup)
+        {
+            vTiles.Add(new DataVTilePath(t));
+        }
+        hTiles[5].isChoiceTile = true;
     }
 }
