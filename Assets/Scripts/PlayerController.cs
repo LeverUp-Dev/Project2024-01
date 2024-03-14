@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,6 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Inside Component")]
-    CharacterController controller;
     Animator animator;
 
     [Header("Player reference")]
@@ -19,12 +19,12 @@ public class PlayerController : MonoBehaviour
 
     Vector3 targetPos;
     bool isMove = false;
+    
     //주사위
     public bool isReady = false;
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
     }
 
@@ -72,14 +72,13 @@ public class PlayerController : MonoBehaviour
         }
 
         //스페이스 키를 눌러 다이스 돌림
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && isReady)
         {
             isReady = false;
-            dice.gameObject.SetActive(false);
 
-            //추후 애니메이션 삽입 부분
+            dice.HitDice();
 
-            StartCoroutine("StepTileMove", dice.diceNum);
+            StartCoroutine(StepTileMove(dice.diceNum, dice.diceFalseDelay));
         }
         
         if (Input.GetKeyDown(KeyCode.R))
@@ -92,30 +91,109 @@ public class PlayerController : MonoBehaviour
     //타겟 타일을 지정하고 움직임 시작
     void WalkToTargetTile(int targetTile)
     {
-        targetPos = new Vector3(tilePathManager.mainTiles[targetTile].mainTile.position.x,
+        targetPos = new Vector3(tilePathManager.GetTilePath(targetTile).position.x,
            transform.position.y,
-           tilePathManager.mainTiles[targetTile].mainTile.position.z);
+           tilePathManager.GetTilePath(targetTile).position.z);
 
         isMove = true;
     }
 
     // 한 걸음 씩 움직이게하는 코루틴 함수
-    IEnumerator StepTileMove(int steps)
+    IEnumerator StepTileMove(int steps, float delay)
     {
+        yield return new WaitForSeconds(delay);
+
         for(int i = 0; i < steps; i++)
         {
-            WalkToTargetTile((currentTile + 1)%40);
+            //메인 경로일 때 로직
+            if (tilePathManager.path == pathType.main)
+            {
+                //경로 전환 타일 판정
+                if (tilePathManager.GetMainTilePath()[currentTile].isChoiceTile)
+                {
+                    GameObject choiceUI = tilePathManager.GetTilePath(currentTile).GetChild(0).gameObject;
 
-            yield return new WaitUntil(() => !isMove);
+                    choiceUI.SetActive(true);
 
-            yield return new WaitForSeconds(0.5f);
+                    yield return new WaitUntil(() => !choiceUI.activeSelf);
+                }
 
-            if (currentTile == 39)
-                currentTile = 0;
-            else
+                //이동
+                WalkToTargetTile((currentTile + 1) % 40);
+
+                yield return new WaitUntil(() => !isMove);
+
+                yield return new WaitForSeconds(0.1f);
+
+                if (currentTile == 39)
+                    currentTile = 0;
+                else
+                    currentTile++;
+            }
+            //H경로일 때 로직
+            else if(tilePathManager.path == pathType.h)
+            {
+                if (tilePathManager.GetHTilePath()[currentTile].isChoiceTile)
+                {
+                    GameObject choiceUI = tilePathManager.GetTilePath(currentTile).GetChild(0).gameObject;
+
+                    choiceUI.SetActive(true);
+
+                    yield return new WaitUntil(() => !choiceUI.activeSelf);
+                }
+
+                if (currentTile + 1 < 9)
+                {
+                    WalkToTargetTile((currentTile + 1));
+                }
+                else if(currentTile + 1 == 9)
+                {
+                    tilePathManager.path = pathType.main;
+
+                    currentTile = 24;
+
+                    WalkToTargetTile(currentTile + 1);
+                }
+
+                yield return new WaitUntil(() => !isMove);
+
+                yield return new WaitForSeconds(0.1f);
+
                 currentTile++;
+            }
+            //V경로일 때 로직
+            else if(tilePathManager.path == pathType.v)
+            {
+                if (tilePathManager.GetVTilePath()[currentTile].isChoiceTile)
+                {
+                    GameObject choiceUI = tilePathManager.GetTilePath(currentTile).GetChild(0).gameObject;
+
+                    choiceUI.SetActive(true);
+
+                    yield return new WaitUntil(() => !choiceUI.activeSelf);
+                }
+
+                if (currentTile + 1 < 9)
+                {
+                    WalkToTargetTile((currentTile + 1));
+                }
+                else if (currentTile + 1 == 9)
+                {
+                    tilePathManager.path = pathType.main;
+
+                    currentTile = 14;
+
+                    WalkToTargetTile(currentTile + 1);
+                }
+
+                yield return new WaitUntil(() => !isMove);
+
+                yield return new WaitForSeconds(0.1f);
+
+                currentTile++;
+            }
         }
 
-        StopAllCoroutines();
+        yield break;
     }
 }

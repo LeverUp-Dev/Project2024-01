@@ -1,13 +1,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.UIElements;
 using UnityEngine;
+
+public enum pathType
+{
+    main, h, v
+}
 
 public class TilePathManager : MonoBehaviour
 {
-    public Transform[] mainTileGroup;
-    public Transform[] hTileGroup;
-    public Transform[] vTileGroup;
+    [Header("Tile")]
+    [SerializeField] private Transform[] mainTileGroup;
+    [SerializeField] private Transform[] hTileGroup;
+    [SerializeField] private Transform[] vTileGroup;
+
+    [Header("Player")]
+    public PlayerController pController;
+
+    [Header("Tile Path")]
+    public pathType path;
 
     public class TileStatus
     {
@@ -47,31 +61,95 @@ public class TilePathManager : MonoBehaviour
         }
     }
 
+    [Header("Serializable Tile")]
     public List<DataMainTilePath> mainTiles = new List<DataMainTilePath>();
     public List<DataHTilePath> hTiles = new List<DataHTilePath>();
     public List<DataVTilePath> vTiles = new List<DataVTilePath>();
 
     private void Awake()
     {
+        //타일 경로 초기화
         foreach (Transform t in mainTileGroup)
         {
             mainTiles.Add(new DataMainTilePath(t));
         }
         mainTiles[5].isChoiceTile = true;
-        mainTiles[15].isChoiceTile = true;
-        mainTiles[25].isChoiceTile = true;
         mainTiles[35].isChoiceTile = true;
-
         foreach (Transform t in hTileGroup)
         {
             hTiles.Add(new DataHTilePath(t));
         }
-        hTiles[5].isChoiceTile = true;
-
+        hTiles[4].isChoiceTile = true;
         foreach (Transform t in vTileGroup)
         {
             vTiles.Add(new DataVTilePath(t));
         }
-        hTiles[5].isChoiceTile = true;
+        vTiles[4].isChoiceTile = true;
+
+        //경로 설정
+        path = pathType.main;
+    }
+
+    public List<DataMainTilePath> GetMainTilePath()
+    {
+        return mainTiles;
+    }
+
+    public List<DataHTilePath> GetHTilePath()
+    {
+        return hTiles;
+    }
+
+    public List<DataVTilePath> GetVTilePath()
+    {
+        return vTiles;
+    }
+
+    public Transform GetTilePath(int tileIndex)
+    {
+        if(path == pathType.main)
+        {
+            return GetMainTilePath()[tileIndex].mainTile;
+        }
+        else if(path == pathType.h)
+        {
+            return GetHTilePath()[tileIndex].hTile;
+        }
+        else
+        {
+            return GetVTilePath()[tileIndex].vTile;
+        }
+    }
+
+    public void ChangeTilePathMain(GameObject choicePathUI)
+    {
+        path = pathType.main;
+
+        choicePathUI.SetActive(false);
+    }
+
+    public void ChangeTilePathH(GameObject choicePathUI)
+    {
+        path = pathType.h;
+
+        if(pController.currentTile == 5)
+            pController.currentTile = -1;
+
+        choicePathUI.SetActive(false);
+    }
+
+    public void ChangeTilePathV(GameObject choicePathUI)
+    {
+        path = pathType.v;
+
+        if(pController.currentTile == 35)
+            pController.currentTile = -1;
+
+        choicePathUI.SetActive(false);
+    }
+
+    public void NotChangeTilePath(GameObject choicePathUI)
+    {
+        choicePathUI.SetActive(false);
     }
 }
