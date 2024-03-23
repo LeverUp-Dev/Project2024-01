@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1055524208047",
+    "project_id": "k-party",
+    "storage_bucket": "k-party.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1055524208047:android:f430d83db7e49f5ab2035a",
+        "android_client_info": {
+          "package_name": "com.PlayDuo.KParty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1055524208047-csul82epr4qe9f3tetgnjguvt9075gms.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDa-Fhrcj6unzDglot8K6tzPn6EEADr_yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1055524208047-csul82epr4qe9f3tetgnjguvt9075gms.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
