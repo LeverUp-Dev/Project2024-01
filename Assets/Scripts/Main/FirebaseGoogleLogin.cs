@@ -45,7 +45,7 @@ public class FirebaseGoogleLogin : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
     }
 
-    void GoogleSignInClick()
+    public void GoogleSignInClick()
     {
         GoogleSignIn.Configuration = configuration;
         GoogleSignIn.Configuration.UseGameSignIn = false;
