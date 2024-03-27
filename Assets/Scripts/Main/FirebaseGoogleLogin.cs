@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using Firebase;
@@ -7,8 +6,6 @@ using Firebase.Extensions;
 using Firebase.Auth;
 using UnityEngine.UI;
 using Google;
-using System.Net.Http;
-using System;
 
 public class FirebaseGoogleLogin : MonoBehaviour
 {
@@ -17,14 +14,19 @@ public class FirebaseGoogleLogin : MonoBehaviour
 
     private GoogleSignInConfiguration configuration;
 
-    DependencyStatus dependencyStatus = DependencyStatus.UnavailableOther;
-    FirebaseAuth auth;
-    FirebaseUser user;
+    Firebase.DependencyStatus dependencyStatus = DependencyStatus.UnavailableOther;
+    Firebase.Auth.FirebaseAuth auth;
+    Firebase.Auth.FirebaseUser user;
 
-    public Text usernameTxt, userEmailTxt;
+    public Text usernameTxt;
+    public Text userEmailTxt;
+
     public Image userProfilePic;
+
     public string imageUrl;
-    public GameObject loginScreen, profileScreen;
+
+    public GameObject loginScreen;
+    public GameObject profileScreen;
 
     void Awake()
     {
@@ -38,15 +40,19 @@ public class FirebaseGoogleLogin : MonoBehaviour
     void Start()
     {
         InitFirebase();
+
+        Debug.Log("auth 확인:" + auth);
     }
 
     void InitFirebase()
     {
-        auth = FirebaseAuth.DefaultInstance;
+        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
     }
 
     public void GoogleSignInClick()
     {
+        Debug.Log("클릭");
+
         GoogleSignIn.Configuration = configuration;
         GoogleSignIn.Configuration.UseGameSignIn = false;
         GoogleSignIn.Configuration.RequestIdToken = true;
@@ -57,6 +63,8 @@ public class FirebaseGoogleLogin : MonoBehaviour
 
     void OnGoogleAuthenticatedFinished(Task<GoogleSignInUser> task)
     {
+        Debug.Log("로그인 시도");
+
         if (task.IsFaulted)
         {
             Debug.LogError("구글 로그인 실패");
@@ -91,6 +99,8 @@ public class FirebaseGoogleLogin : MonoBehaviour
                 profileScreen.SetActive(true);
 
                 StartCoroutine(LoadImage(CheckImageUrl(user.PhotoUrl.ToString())));
+
+                Debug.Log("이미지 URL: " + CheckImageUrl(user.PhotoUrl.ToString()));
             });
         }
     }
